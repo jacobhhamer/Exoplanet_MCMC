@@ -1,5 +1,5 @@
 import exoplanet_mcmc.exoplanet_mcmc as exmc
-import beta_pic_b as data
+import ..data.beta_pic_b as data
 import numpy as np
 
 obs=[[data.ts, data.del_RA, data.del_DEC]]
