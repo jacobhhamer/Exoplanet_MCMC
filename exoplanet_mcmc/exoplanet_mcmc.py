@@ -5,21 +5,22 @@ import emcee
 import corner
 import matplotlib.pyplot as plt
 import scipy.optimize as op
+from matplotlib.ticker import FormatStrFormatter
 
 
 def mas_unc_to_m_unc(distance, mas_unc):
     """ Converts mas uncertainties to meters at the plane of the system.
         Arguments:
             distance - distance to the exoplanet in meters
-            mas_unc - the uncertainty on the observations in mas
-    """
+            mas_unc - the uncertainty on the observations in mas"""
     radians_unc = mas_unc.to('rad')
     m_unc = np.tan(radians_unc) * distance
     return m_unc.to('m')
 
 
 def lnlike(pars, data, info):
-    """ Likelihood function that returns the chi-squared distance between the model, using a set of orbital parameters passed by MCMC, and the observed values.
+    """ Likelihood function that returns the chi-squared distance between the model, using a set of orbital parameters
+     passed by MCMC, and the observed values.
         Arguments:
             pars - passed during MCMC; tuple of unitless parameters in order:
                 total_mass [in kg]
@@ -33,8 +34,7 @@ def lnlike(pars, data, info):
             info - tuple of info in order of:
                 time corresponding to data [sec]
                 sigma_theta [rad]
-                sigma_r [m]
-    """
+                sigma_r [m]"""
     mpm, e, a, time_periastron, arg_periastron = pars  # Unpack parameters
     times, sigma_theta, sigma_r = info  # Unpacking info
     thetas, rs = data  # Unpacking data
@@ -76,13 +76,12 @@ class System(object):
             Arguments [all without units attached]:
                 mstar - stellar mass in units of Msun
                 mplanet - planetary mass in units of Mjup
-                distance - distance to system
-                semimajor_axis [in au]
+                distance - distance to system in parsecs
+                semimajor_axis - in au
                 eccentricity
                 time_of_periastron [between -1 and 1, units of period]
                 argument_of_periastron [-2pi to 2pi]
-                timesteps - number of timesteps in an orbit
-        """
+                timesteps - number of timesteps in an orbit"""
         self.mstar = mstar * cons.M_sun
         self.mplanet = mplanet * cons.M_jup
         self.distance = distance * cons.pc
@@ -133,10 +132,25 @@ class System(object):
         """
         fig, ax = plt.subplots(1, 1)
         ax.set_aspect('equal')
-        ax.scatter(0, 0, marker='*', color='k', s=30)
-        for i, t in enumerate(self.times):
-            ax.scatter(self.rs[i] * np.cos(self.true_anomalies[i] + self.arg),
-                       self.rs[i] * np.sin(self.true_anomalies[i] + self.arg), color='c', s=5)
+        ax.scatter(0, 0, marker='*', color='k', s=100, label='Host Star')
+        ax.scatter(self.rs.to('au') * np.cos(self.true_anomalies + self.arg),
+                   self.rs.to('au') * np.sin(self.true_anomalies + self.arg), color='#ff7119', s=25, label='Exoplanet')
+        lims=ax.dataLim.get_points()
+        ymin=lims[0][1]
+        ymax=lims[1][1]
+        xmin=lims[0][0]
+        xmax=lims[1][0]
+        ax.set_xticks([xmin, 0, xmax])
+        ax.set_yticks([ymin, 0, ymax])
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%.1f'+' AU'))
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.1f'+' AU'))
+        handles, labels=ax.get_legend_handles_labels()
+        for key in ax.spines:
+            ax.spines[key].set_visible(False)
+        circle=plt.Circle((0,0), radius=1., color='g', fill=False, linewidth=2)
+        ax.add_artist(circle)
+        ax.grid(True, alpha=0.4)
+        ax.legend(handles=handles+[circle], labels=['Host Star', 'Exoplanet', "Earth's Orbit"], loc=1)   
         return fig
 
     def generate_mcmc_sample(self, mas_unc, sigma_true_anomaly, sigma_mass, indices):
@@ -154,32 +168,48 @@ class System(object):
                                                                                      size=(indices[1] - indices[0]))
         self.noisy_true_anomalies = self.true_anomalies[indices[0]: indices[1]] + self.sigma_true_anom * np.random.normal(
             loc=0, size=(indices[1] - indices[0]))
-        self.noisy_mass = self.mstar + sigma_mass * np.random.normal(loc=0, size=1)
+        self.noisy_mass = self.mstar + sigma_mass * np.random.randn()
         self.mcmc_times = self.times[indices[0]: indices[1]]
 
     def plot_mcmc_sample(self):
-        """ Method to plot the data which the MCMC will run on. Called on an instance of System for which generate_mcmc_sample has been run.
-        """
-        fig, ax = plt.subplots(1, 1)
-        ax.set_aspect('equal')
-        ax.scatter(0, 0, marker='*', color='k', s=30)
-        for i, t in enumerate(self.mcmc_times):
-            ax.scatter(self.noisy_rs[i] * np.cos(self.noisy_true_anomalies[i] + self.arg),
-                       self.noisy_rs[i] * np.sin(self.noisy_true_anomalies[i] + self.arg), color='c', s=5)
+        """ Method to plot the data which the MCMC will run on. Called on an instance of System for which
+        generate_mcmc_sample has been run. """
+        fig, ax = plt.subplots(1, 1s        ax.set_aspect('equal')
+        ax.scatter(0, 0, marker='*', color='k', s=100, label='Host Star')
+        keep=np.logical_and(self.times>=self.mcmc_times.min(),self.times<=self.mcmc_times.max())
+        ax.scatter(self.noisy_rs.to('au') * np.cos(self.noisy_true_anomalies + self.arg),
+                   self.noisy_rs.to('au') * np.sin(self.noisy_true_anomalies + self.arg), color='#ff7119', s=25, label='Noise Added (Observations)')
+        ax.scatter(self.rs[keep].to('au') * np.cos(self.true_anomalies[keep] + self.arg),
+                   self.rs[keep].to('au') * np.sin(self.true_anomalies[keep] + self.arg), color='k', s=25, alpha=.3, label='True Values')
+        handles, labels=ax.get_legend_handles_labels()
+        lims=ax.dataLim.get_points()
+        ymin=lims[0][1]
+        ymax=lims[1][1]
+        xmin=lims[0][0]
+        xmax=lims[1][0]
+        ax.set_xticks([xmin, 0, xmax])
+        ax.set_yticks([ymin, 0, ymax])
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%.1f'+' AU'))
+        ax.yaxis.set_major_formatter(FormatStrFormatter('%.1f'+' AU'))
+        for key in ax.spines:
+            ax.spines[key].set_visible(False)
+        circle=plt.Circle((0,0), radius=1., color='g', fill=False, linewidth=2)
+        ax.add_artist(circle)
+        ax.grid(True, alpha=0.4)
+        ax.legend(handles=handles+[circle], labels=['Host Star', 'Noise Added (Observations)', 'True Values', "Earth's Orbit"], loc=1)   
         return fig
 
+
     def generate_first_guess(self):
-        """ Method to generate the first guess [initial position in parameter space] for the MCMC, by minimizing the likelihood function.
-        """
+        """ Method to generate the first guess [initial position in parameter space] for the MCMC, by minimizing the
+        likelihood function. """
         self.data = [self.noisy_true_anomalies, self.noisy_rs]
         self.info = [self.mcmc_times, self.sigma_true_anom, self.sigma_r]
         nll = lambda *args: -lnlike(*args)
-        result = op.minimize(nll, [(self.noisy_mass + self.mplanet).value, self.e, self.a.value, self.tau, self.arg.value],
-                             (self.data, self.info))
+        result = op.minimize(fun=nll, x0=[(self.noisy_mass + self.mplanet).value, self.e, self.a.value, self.tau, self.arg.value],
+                             args=(self.data, self.info), bounds=[(0, 100.*self.noisy_mass.value), (.001, .999), (0, 100*self.a.value), (-1,1),(-2.*np.pi, 2*np.pi)])
         minv = result["x"]
-        minv[0] = minv[0][0]
         minv = np.array(minv, dtype=float)
-        minv[1]=np.abs(minv[1])
         self.pos0 = minv
 
     def lnprior(self, pars):
@@ -190,8 +220,7 @@ class System(object):
                 eccentricity
                 semimajor_axis [in m]
                 time_of_periastron [between -1 and 1]
-                argument_of_periastron [-2pi to 2pi]
-        """
+                argument_of_periastron [-2pi to 2pi]"""
         mpm, e, a, time_periastron, arg_periastron = pars
         if ((self.noisy_mass * .5).value < mpm < (self.noisy_mass * 2.).value) and (0.0001 < e < 0.99) and (
                 (self.a / 2.).value < a < (self.a * 2.).value) and (-1 < time_periastron < 1) and (
@@ -214,8 +243,7 @@ class System(object):
                 info - tuple of info in order of:
                     time corresponding to data [sec]
                     sigma_theta [rad]
-                    sigma_r [m]
-        """
+                    sigma_r [m]"""
         lp = self.lnprior(pars)
         if ~(np.isfinite(lp)):
             return -np.inf
@@ -228,11 +256,10 @@ class System(object):
                 nwalker - number of MCMC walkers
                 nburn - number of burn-in steps
                 nsteps - number of MCMC steps
-            Note: For the EnsembleSampler default affine invariant algorithm, it is good to use many walkers and fewer steps
-        """
+            Note: For the EnsembleSampler default affine invariant algorithm, it is good to use many walkers and fewer steps."""
         ndim = len(self.pos0)
         pos = np.array([self.pos0 + p0spread * np.array(
-            [1.5 * self.noisy_mass.value[0], 1., 1.5 * self.a.value, 2., 4. * np.pi]) * np.random.randn(ndim) for i in
+            [1.5 * self.noisy_mass.value, 1., 1.5 * self.a.value, 2., 4. * np.pi]) * np.random.randn(ndim) for i in
                range(nwalker)])
         for i in range(ndim):
             print(pos[:,i].min(), pos[:,i].max())
@@ -240,11 +267,11 @@ class System(object):
         for i, result in enumerate(sampler.sample(pos, iterations=nburn)):
             if i==nburn-1:
                 newpos, prob, state = result
-            if i % (nburn/10.) == 0:
+            if (i+1) % (nburn/10.) == 0:
                 print("Burn in progress: {0:5.1%}".format(float(i) / nburn))
         sampler.reset()
         for i, result in enumerate(sampler.sample(newpos, iterations=nsteps)):
-            if i % (nsteps/10.) == 0:
+            if (i+1) % (nsteps/10.) == 0:
                 print("MCMC progress: {0:5.1%}".format(float(i) / nsteps))
         self.mcmc = sampler
         if (np.mean(sampler.acceptance_fraction) < .25) or (np.mean(sampler.acceptance_fraction) > .5):
@@ -252,8 +279,7 @@ class System(object):
 
 
     def walker_plot(self):
-        """ Method to plot the walkers in each parameter space. Called on an instance of System for which runmcmc has been run.
-        """
+        """ Method to plot the walkers in each parameter space. Called on an instance of System for which runmcmc has been run."""
         f, axs = plt.subplots(self.pos0.shape[0], 1, figsize=(4, 12))
         for i, ax in enumerate(f.axes):
             for j in range(self.mcmc.chain.shape[0]):
@@ -262,8 +288,7 @@ class System(object):
         return f
 
     def corner_plot(self):
-        """ Method to plot the corner plot for the MCMC. Called on an instance of System for which runmcmc has been run.
-        """
+        """ Method to plot the corner plot for the MCMC. Called on an instance of System for which runmcmc has been run."""
         samples = self.mcmc.chain[:, :, :].reshape((-1, self.pos0.shape[0]))
         fig = corner.corner(samples[:, :], labels=["M", "e", "a", "tau", "arg"],
                             truths=[(self.mstar + self.mplanet).value, self.e, self.a.value, self.tau, self.arg.value])
