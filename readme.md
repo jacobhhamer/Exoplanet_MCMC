@@ -8,7 +8,7 @@ To get to a corner plot of the orbital parameters of a system, only four functio
 
 ### Create an instance of System
 
-'''print(exmc.System.__init__.__doc__)
+```print(exmc.System.__init__.__doc__)
  Instantiates a System
             Arguments [all without units attached]:
                 mstar - stellar mass in units of Msun
@@ -22,13 +22,13 @@ To get to a corner plot of the orbital parameters of a system, only four functio
 
 sys=exmc.System(mstar=2., mplanet=2., semimajor_axis=2., eccentricity=.2, distance=5., argument_of_periastron=np.pi/4., time_periastron=0, timesteps=40)
 
-sys.plot_orbit()'''
+sys.plot_orbit()```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/test_orbit.pdf "Orbit")
 
 ### Pick a sample of the orbit to add noise to and use as observations for the MCMC
 
-'''print(exmc.System.generate_mcmc_sample.__doc__)
+```print(exmc.System.generate_mcmc_sample.__doc__)
  For an instance of system, generates a sample to run MCMC on.
             Arguments:
                 mas_unc - uncertainty in observations in mas, no units attached
@@ -37,22 +37,22 @@ sys.plot_orbit()'''
                 indices - slice of the time, true_anomaly, and radius arrays to use
 sys.generate_mcmc_sample(indices=[10,20], mas_unc=5., sigma_true_anomaly=3., sigma_mass=.03)
 
-sys.plot_mcmc_sample()'''
+sys.plot_mcmc_sample()```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/test_mcmc_sample.pdf "MCMC Sample")
 
 ### Generate the first guess of the parameters for the sample observations
 
-'''print(exmc.System.generate_first_guess.__doc__)
+```print(exmc.System.generate_first_guess.__doc__)
  Method to generate the first guess [initial position in parameter space] for the MCMC, by minimizing the
         likelihood function.
 
 sys.generate_first_guess()
-'''
+```
 
 ### Run the MCMC on the sample of the data
 
-'''print(exmc.System.runmcmc.__doc__)
+```print(exmc.System.runmcmc.__doc__)
  Method to run emcee on an instance of System for which generate_sample_data has been run.
             Arguments:
                 p0spread - fraction of range of parameter space which is used as variance of normal distribution to sample from
@@ -89,15 +89,15 @@ MCMC progress: 69.8%
 MCMC progress: 79.8%
 MCMC progress: 89.8%
 MCMC progress: 99.8%
-'''
+```
 
 ###Plot the results
 
-'''sys.walker_plot()'''
+```sys.walker_plot()```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/walker_plot.pdf "Walker Plot: Should look like white noise if run for enough steps")
 
-'''sys.corner_plot()'''
+```sys.corner_plot()```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/corner_plot.pdf "Corner Plot")
 
