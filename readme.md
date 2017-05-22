@@ -22,7 +22,8 @@ To get to a corner plot of the orbital parameters of a system, only four functio
 
 sys=exmc.System(mstar=2., mplanet=2., semimajor_axis=2., eccentricity=.2, distance=5., argument_of_periastron=np.pi/4., time_periastron=0, timesteps=40)
 
-sys.plot_orbit()```
+sys.plot_orbit()
+```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/orbit_plot.pdf "Orbit")
 
@@ -37,7 +38,8 @@ sys.plot_orbit()```
                 indices - slice of the time, true_anomaly, and radius arrays to use
 sys.generate_mcmc_sample(indices=[10,20], mas_unc=5., sigma_true_anomaly=3., sigma_mass=.03)
 
-sys.plot_mcmc_sample()```
+sys.plot_mcmc_sample()
+```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/mcmc_sample_plot.pdf "MCMC Sample")
 
@@ -93,11 +95,13 @@ MCMC progress: 99.8%
 
 ###Plot the results
 
-```sys.walker_plot()```
+```sys.walker_plot()
+```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/walker_plot.pdf "Walker Plot: Should look like white noise if run for enough steps")
 
-```sys.corner_plot()```
+```sys.corner_plot()
+```
 
 ![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/corner_plot.pdf "Corner Plot")
 
