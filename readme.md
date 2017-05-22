@@ -97,14 +97,18 @@ sys.runmcmc(p0spread=.01, nwalker=500, nburn=200, nsteps=400)
 #MCMC progress: 99.8%
 ```
 
-### Plot the results
+## Plot the results
 
 ```sys.walker_plot()```
 
 <img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/walker_plot.png" height="1000">
 
+If the MCMC was run with enough steps, the plot of the walkers in each parameter space should look like "white noise", as above.
+
 ```sys.corner_plot()```
 
 <img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/corner_plot.png" width="750">
+
+The true values of the parameters are overplotted in blue. We can see that they fall near the regions of maximum probability.
 
 
