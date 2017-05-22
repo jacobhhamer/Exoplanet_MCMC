@@ -24,7 +24,7 @@ sys=exmc.System(mstar=2., mplanet=2., semimajor_axis=2., eccentricity=.2, distan
 
 sys.plot_orbit()```
 
-![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/test_orbit.pdf "Orbit")
+![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/orbit_plot.pdf "Orbit")
 
 ### Pick a sample of the orbit to add noise to and use as observations for the MCMC
 
@@ -39,7 +39,7 @@ sys.generate_mcmc_sample(indices=[10,20], mas_unc=5., sigma_true_anomaly=3., sig
 
 sys.plot_mcmc_sample()```
 
-![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/test_mcmc_sample.pdf "MCMC Sample")
+![alt text](https://github.com/jacobhhamer/Exoplanet_MCMC/mcmc_sample_plot.pdf "MCMC Sample")
 
 ### Generate the first guess of the parameters for the sample observations
 
