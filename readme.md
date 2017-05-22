@@ -26,12 +26,12 @@ sys=exmc.System(mstar=2., mplanet=2., semimajor_axis=2., eccentricity=.2, distan
 sys.plot_orbit()
 ```
 
-![](https://github.com/jacobhhamer/Exoplanet_MCMC/orbit_plot.png "Orbit")
+<img src='https://github.com/jacobhhamer/Exoplanet_MCMC/orbit_plot.png' width=750>
 
 ### Pick a sample of the orbit to add noise to and use as observations for the MCMC
 
 ```python
-#print(exmc.System.generate_mcmc_sample.__doc__)
+print(exmc.System.generate_mcmc_sample.__doc__)
 # For an instance of system, generates a sample to run MCMC on.
 #            Arguments:
 #                mas_unc - uncertainty in observations in mas, no units attached
@@ -44,7 +44,7 @@ sys.generate_mcmc_sample(indices=[10,20], mas_unc=5., sigma_true_anomaly=3., sig
 sys.plot_mcmc_sample()
 ```
 
-![](https://github.com/jacobhhamer/Exoplanet_MCMC/mcmc_sample_plot.png "MCMC Sample")
+<img src='https://github.com/jacobhhamer/Exoplanet_MCMC/mcmc_sample_plot.png' width=750>
 
 ### Generate the first guess of the parameters for the sample observations
 
@@ -101,10 +101,10 @@ sys.runmcmc(p0spread=.01, nwalker=500, nburn=200, nsteps=400)
 
 ```sys.walker_plot()```
 
-![](https://github.com/jacobhhamer/Exoplanet_MCMC/walker_plot.png "Walker Plot: Should look like white noise if run for enough steps")
+<img src='https://github.com/jacobhhamer/Exoplanet_MCMC/walker_plot.png' width=750>
 
 ```sys.corner_plot()```
 
-![](https://github.com/jacobhhamer/Exoplanet_MCMC/corner_plot.png "Corner Plot")
+<img src='https://github.com/jacobhhamer/Exoplanet_MCMC/corner_plot.png' width=750>
 
 
