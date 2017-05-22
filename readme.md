@@ -26,7 +26,7 @@ sys=exmc.System(mstar=2., mplanet=2., semimajor_axis=2., eccentricity=.2, distan
 sys.plot_orbit()
 ```
 
-<img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/orbit_plot.png" width="750">
+<img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/orbit_plot.png" width="300">
 
 ### Pick a sample of the orbit to add noise to and use as observations for the MCMC
 
@@ -44,7 +44,7 @@ sys.generate_mcmc_sample(indices=[10,20], mas_unc=5., sigma_true_anomaly=3., sig
 sys.plot_mcmc_sample()
 ```
 
-<img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/mcmc_sample_plot.png" width="750">
+<img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/mcmc_sample_plot.png" width="300">
 
 ### Generate the first guess of the parameters for the sample observations
 
@@ -101,7 +101,7 @@ sys.runmcmc(p0spread=.01, nwalker=500, nburn=200, nsteps=400)
 
 ```sys.walker_plot()```
 
-<img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/walker_plot.png" width=750>
+<img src="https://raw.githubusercontent.com/jacobhhamer/Exoplanet_MCMC/master/walker_plot.png" height="1000">
 
 ```sys.corner_plot()```
 
